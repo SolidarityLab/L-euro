@@ -129,37 +129,6 @@ The absence of a verifiable protocol between these actors has generated document
 
 The identical structural problem exists for social delivery programmes to homebound and vulnerable persons administered by the Agency for Social Assistance.
 
-## Background
-
-Council Directive 2001/55/EC was activated for the 
-first time in its history in March 2022, in response 
-to displacement from Ukraine. Over 100,000 persons 
-accessed humanitarian support through Bulgaria alone.
-
-Four years later, the administrative chain between 
-the institution assessing the right and the institution 
-paying for delivered support remains unconnected by any 
-verifiable protocol. The result is documented by the 
-European Court of Auditors and the Bulgarian National 
-Audit Office: systemic discrepancies, thousands of 
-unresolved provider objections, and funds absorbed by 
-the national budget due to the impossibility of 
-auditable delivery proof.
-
-The problem is architectural, not administrative. 
-The four elements of the chain — Right, Identification, 
-Act of Delivery, Payment — are implemented in 
-non-communicating systems designed for different 
-purposes. Each corrective measure adds a new 
-administrative layer without removing the old one.
-
-DTEP-S addresses the architectural root, not the 
-administrative symptom. It defines the missing protocol 
-layer connecting these four elements into a continuous, 
-verifiable, auditable chain — designed to work with or 
-without beneficiary devices, and to function under 
-partial institutional adoption.
-
 ## Funding
 
 This project is submitted to the **NGI Zero Commons Fund** (13th call, deadline June 1, 2026) by the **Centre for Solidary Digital Transformation (CSDT)**, a Bulgarian public benefit association and member of the Bulgarian Institute for Standardisation (BIS).
