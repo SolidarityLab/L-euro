@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "DTEP-F test vectors for conformance testing. See spec/conformance-testing.md for test profiles.",
+  "version": "0.1-draft",
+  "vectors": {
+    "transformation": [
+      {
+        "id": "T3-01",
+        "description": "Valid EN 16931 invoice — full extraction",
+        "input": "tests/fixtures/sample_invoice.xml",
+        "expected": {
+          "m1_issuance_bucket": "2026-08-15T14:00:00Z",
+          "m1_tax_event_bucket": "2026-08-15T14:00:00Z",
+          "m2_cpv_code": "45000000-7",
+          "m3_nace_code": "F41",
+          "m4_nace_code": "G46",
+          "m5_amount": "12500.00",
+          "m5_currency": "EUR",
+          "m0_format": "taler-coin-commitment",
+          "artifact_a_present": true,
+          "artifact_b_valid": true
+        }
+      },
+      {
+        "id": "T3-02",
+        "description": "Seller name BT-27 must be scrubbed in Artifact B",
+        "input": "tests/fixtures/sample_invoice.xml",
+        "expected": {
+          "artifact_b_contains_seller_name": false,
+          "artifact_a_contains_bt27_hash": true,
+          "bt27_hash_format": "sha512-hex"
+        }
+      },
+      {
+        "id": "T3-03",
+        "description": "Timestamp quantisation to hourly bucket",
+        "input_timestamp": "2026-08-15T14:37:22Z",
+        "expected": {
+          "m1_issuance_bucket": "2026-08-15T14:00:00Z"
+        }
+      },
+      {
+        "id": "T3-04",
+        "description": "Missing BT-109 tax exclusive amount — should fail",
+        "input": "tests/fixtures/sample_invoice_missing_bt109.xml",
+        "expected": {
+          "error": true,
+          "error_code": "MISSING_MANDATORY_FIELD",
+          "error_field": "BT-109"
+        }
+      },
+      {
+        "id": "T3-05",
+        "description": "Multi-CPV invoice decomposition",
+        "input": "tests/fixtures/sample_invoice_multi_cpv.xml",
+        "expected": {
+          "hyperedge_count": 2,
+          "m5_sum_preserved": true,
+          "m0_shared": true
+        }
+      },
+      {
+        "id": "T3-06",
+        "description": "Non-determinism of M0 — same invoice produces different coin commitment",
+        "input": "tests/fixtures/sample_invoice.xml",
+        "note": "Submit twice. M0 values must differ. M1-M5 must be identical.",
+        "expected": {
+          "m0_first_submission_equals_m0_second_submission": false,
+          "m1_m5_identical": true
+        }
+      }
+    ],
+    "signing": [
+      {
+        "id": "T4-01",
+        "description": "Valid Ed25519 signature over public DTEP JSON",
+        "input": "tests/fixtures/sample_dtep_public.json",
+        "expected": {
+          "signature_valid": true,
+          "verification_method_present": true,
+          "cryptosuite": "eddsa-rdfc-2022"
+        }
+      },
+      {
+        "id": "T4-02",
+        "description": "Tampered public DTEP JSON — signature must fail",
+        "input": "tests/fixtures/sample_dtep_public_tampered.json",
+        "expected": {
+          "signature_valid": false
+        }
+      }
+    ],
+    "drrdb": [
+      {
+        "id": "T5-01",
+        "description": "Valid DRR record storage and retrieval",
+        "input": "tests/fixtures/sample_dtep_public.json",
+        "expected": {
+          "stored": true,
+          "query_by_m2_returns_record": true
+        }
+      },
+      {
+        "id": "T5-02",
+        "description": "Duplicate M0 rejection",
+        "input": "tests/fixtures/sample_dtep_public.json",
+        "note": "Submit the same record twice.",
+        "expected": {
+          "first_submission": "accepted",
+          "second_submission": "rejected",
+          "error_code": "DUPLICATE_M0"
+        }
+      },
+      {
+        "id": "T5-03",
+        "description": "Invalid signature rejection",
+        "input": "tests/fixtures/sample_dtep_public_tampered.json",
+        "expected": {
+          "stored": false,
+          "incident_logged": true
+        }
+      }
+    ],
+    "analytical": [
+      {
+        "id": "T6-01",
+        "description": "Price anomaly signal — amount 10x reference price",
+        "input": {
+          "m2_cpv": "45000000-7",
+          "m5_amount": "125000.00",
+          "r_c_t_reference": "12500.00",
+          "theta_c": "0.20"
+        },
+        "expected": {
+          "delta_e": "9.00",
+          "s_price_signal": true,
+          "audit_request": false
+        }
+      },
+      {
+        "id": "T6-02",
+        "description": "Combined price + macroeconomic signal — Audit Request",
+        "input": {
+          "s_price": true,
+          "s_macro": true
+        },
+        "expected": {
+          "audit_request": true
+        }
+      },
+      {
+        "id": "T6-03",
+        "description": "Cyclic hyperedge — carousel fraud detection",
+        "input": {
+          "hyperedges": [
+            { "t_issuance": "2026-08-01T10:00:00Z", "t_tax_event": "2026-08-01T11:00:00Z", "label": "A→B" },
+            { "t_issuance": "2026-08-01T11:00:00Z", "t_tax_event": "2026-08-01T12:00:00Z", "label": "B→C" },
+            { "t_issuance": "2026-08-01T12:00:00Z", "t_tax_event": "2026-08-01T10:00:00Z", "label": "C→A (cycle)" }
+          ]
+        },
+        "expected": {
+          "tau_h": "cyclic",
+          "s_structural_signal": true,
+          "audit_request": true,
+          "audit_request_immediate": true
+        }
+      },
+      {
+        "id": "T6-04",
+        "description": "Normal transaction sequence — no signals",
+        "input": {
+          "hyperedges": [
+            { "t_issuance": "2026-08-01T10:00:00Z", "t_tax_event": "2026-08-01T10:00:00Z" },
+            { "t_issuance": "2026-08-01T11:00:00Z", "t_tax_event": "2026-08-01T11:00:00Z" },
+            { "t_issuance": "2026-08-01T12:00:00Z", "t_tax_event": "2026-08-01T12:00:00Z" }
+          ],
+          "m5_amounts": ["1000.00", "2000.00", "1500.00"],
+          "r_c_t_reference": "1200.00",
+          "theta_c": "0.50"
+        },
+        "expected": {
+          "tau_h": "acyclic",
+          "s_price_signal": false,
+          "s_structural_signal": false,
+          "audit_request": false
+        }
+      },
+      {
+        "id": "T6-05",
+        "description": "Self-loop (t_issuance = t_tax_event) — must be acyclic",
+        "input": {
+          "hyperedges": [
+            { "t_issuance": "2026-08-01T10:00:00Z", "t_tax_event": "2026-08-01T10:00:00Z" }
+          ]
+        },
+        "expected": {
+          "tau_h": "acyclic",
+          "s_structural_signal": false
+        }
+      }
+    ]
+  },
+  "fixtures": {
+    "sample_invoice": {
+      "file": "tests/fixtures/sample_invoice.xml",
+      "description": "Minimal valid EN 16931 UBL 2.1 invoice with all mandatory fields, CPV code, and NACE codes for seller and buyer.",
+      "status": "placeholder — to be implemented by Valentin Ivanov"
+    },
+    "sample_invoice_missing_bt109": {
+      "file": "tests/fixtures/sample_invoice_missing_bt109.xml",
+      "description": "EN 16931 invoice with BT-109 (tax exclusive amount) omitted. Used for T3-04.",
+      "status": "placeholder"
+    },
+    "sample_invoice_multi_cpv": {
+      "file": "tests/fixtures/sample_invoice_multi_cpv.xml",
+      "description": "EN 16931 invoice with two CPV codes. Used for T3-05.",
+      "status": "placeholder"
+    },
+    "sample_dtep_public": {
+      "file": "tests/fixtures/sample_dtep_public.json",
+      "description": "Valid signed DTEPPublicRecord. Used for T4-01, T5-01, T5-02.",
+      "status": "placeholder"
+    },
+    "sample_dtep_public_tampered": {
+      "file": "tests/fixtures/sample_dtep_public_tampered.json",
+      "description": "DTEPPublicRecord with M5 amount modified after signing. Used for T4-02, T5-03.",
+      "status": "placeholder"
+    }
+  }
+}
