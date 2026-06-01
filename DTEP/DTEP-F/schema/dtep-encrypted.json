@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/SolidarityLab/L-euro/main/DTEP/DTEP-F/schema/dtep-encrypted.json",
+  "title": "DTEP Encrypted Audit Record",
+  "description": "Full encrypted JSON audit record (Artifact A). Held in Taler Exchange custody. Contains original subject identifiers in DD-18 scrubbed form. Accessible only on Audit Request for a specific M0 element.",
+  "type": "object",
+  "required": [
+    "id",
+    "m0_reference",
+    "en16931_scrubbed",
+    "forgettable_fields",
+    "signing_timestamp",
+    "exchange"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Unique audit record identifier. Matches the id in the corresponding DTEPPublicRecord."
+    },
+    "m0_reference": {
+      "type": "string",
+      "description": "Taler coin commitment from M0 of the corresponding DTEPPublicRecord. Links Artifact A to the public record."
+    },
+    "en16931_scrubbed": {
+      "type": "object",
+      "description": "Full EN 16931 invoice object with forgettable fields replaced by DD-18 salted hashes. Structure mirrors EN 16931 semantic model.",
+      "required": ["invoice_number", "issue_date", "seller", "buyer", "lines", "totals"],
+      "properties": {
+        "invoice_number": {
+          "type": "string",
+          "description": "EN 16931 BT-1. Invoice identifier. Retained as-is — not a forgettable field."
+        },
+        "issue_date": {
+          "type": "string",
+          "format": "date",
+          "description": "EN 16931 BT-2. Invoice issue date. Retained as-is."
+        },
+        "seller": {
+          "type": "object",
+          "description": "Seller information. Subject identifiers replaced by DD-18 hashes.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "EN 16931 BT-27. SHA512(salt || seller_name). Forgettable field."
+            },
+            "vat_id": {
+              "type": "string",
+              "description": "EN 16931 BT-29. SHA512(salt || seller_vat_id). Forgettable field."
+            },
+            "address": {
+              "type": "string",
+              "description": "EN 16931 BT-35. SHA512(salt || seller_address). Forgettable field."
+            },
+            "iban": {
+              "type": "string",
+              "description": "EN 16931 BT-34. SHA512(salt || seller_iban). Forgettable field."
+            },
+            "nace_code": {
+              "type": "string",
+              "description": "NACE Rev. 2 code. Retained as-is — maps to M3."
+            }
+          }
+        },
+        "buyer": {
+          "type": "object",
+          "description": "Buyer information. Subject identifiers replaced by DD-18 hashes.",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "EN 16931 BT-44. SHA512(salt || buyer_name). Forgettable field."
+            },
+            "vat_id": {
+              "type": "string",
+              "description": "EN 16931 BT-46. SHA512(salt || buyer_vat_id). Forgettable field."
+            },
+            "address": {
+              "type": "string",
+              "description": "EN 16931 BT-50. SHA512(salt || buyer_address). Forgettable field."
+            },
+            "nace_code": {
+              "type": "string",
+              "description": "NACE Rev. 2 code. Retained as-is — maps to M4."
+            }
+          }
+        },
+        "lines": {
+          "type": "array",
+          "description": "Invoice line items.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cpv_code": {
+                "type": "string",
+                "description": "CPV code for this line. Maps to M2."
+              },
+              "quantity": {
+                "type": "number",
+                "description": "Quantity. Retained as-is."
+              },
+              "unit_price": {
+                "type": "string",
+                "description": "Unit price in EUR. Retained as-is."
+              },
+              "line_total": {
+                "type": "string",
+                "description": "Line total in EUR. Retained as-is."
+              }
+            }
+          }
+        },
+        "totals": {
+          "type": "object",
+          "properties": {
+            "tax_exclusive_amount": {
+              "type": "string",
+              "description": "EN 16931 BT-109. Maps to M5. Retained as-is."
+            },
+            "vat_amount": {
+              "type": "string",
+              "description": "EN 16931 BT-110. VAT amount. Retained as-is."
+            },
+            "tax_inclusive_amount": {
+              "type": "string",
+              "description": "EN 16931 BT-112. Total with VAT. Retained as-is."
+            }
+          }
+        }
+      }
+    },
+    "forgettable_fields": {
+      "type": "object",
+      "description": "DD-18 metadata for all scrubbed fields.",
+      "required": ["salt_derivation", "scrubbed_fields"],
+      "properties": {
+        "salt_derivation": {
+          "type": "object",
+          "description": "HKDF parameters used for salt derivation from M0 coin commitment.",
+          "required": ["algorithm", "m0_input"],
+          "properties": {
+            "algorithm": {
+              "type": "string",
+              "const": "HKDF-SHA512",
+              "description": "Salt derivation algorithm. RFC 5869."
+            },
+            "m0_input": {
+              "type": "string",
+              "description": "M0 coin commitment used as HKDF input key material."
+            }
+          }
+        },
+        "scrubbed_fields": {
+          "type": "array",
+          "description": "List of all scrubbed fields with their EN 16931 element reference.",
+          "items": {
+            "type": "object",
+            "required": ["en16931_element", "hash"],
+            "properties": {
+              "en16931_element": {
+                "type": "string",
+                "description": "EN 16931 semantic element identifier (e.g. BT-27)."
+              },
+              "hash": {
+                "type": "string",
+                "description": "SHA512(salt || original_value). Hex encoded."
+              }
+            }
+          }
+        }
+      }
+    },
+    "payment_status": {
+      "type": "object",
+      "description": "Taler payment status. Updated by Exchange on settlement.",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "settled", "partially_settled", "disputed", "cancelled"],
+          "description": "Payment status."
+        },
+        "settled_amount": {
+          "type": "string",
+          "description": "Amount settled in EUR. Decimal string with two decimal places."
+        },
+        "settlement_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Taler Exchange settlement confirmation timestamp."
+        }
+      }
+    },
+    "signing_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Taler Exchange signing timestamp. May differ from M1 issuance_bucket in batch/offline scenarios."
+    },
+    "exchange": {
+      "type": "object",
+      "description": "Taler Exchange metadata.",
+      "required": ["instance", "signing_key_id"],
+      "properties": {
+        "instance": {
+          "type": "string",
+          "format": "uri",
+          "description": "Taler Exchange instance URI."
+        },
+        "signing_key_id": {
+          "type": "string",
+          "description": "Exchange signing key identifier at time of signing. For long-term verification archive."
+        }
+      }
+    },
+    "invoice_lifecycle": {
+      "type": "string",
+      "enum": ["issuance", "cancellation", "correction", "credit_note"],
+      "description": "EN 16931 invoice lifecycle event type.",
+      "default": "issuance"
+    },
+    "lifecycle_reference": {
+      "type": "string",
+      "description": "M0 reference of the original invoice for cancellation, correction, or credit note events."
+    }
+  },
+  "additionalProperties": false
+}
