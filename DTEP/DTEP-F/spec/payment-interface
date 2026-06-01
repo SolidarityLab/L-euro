@@ -1,0 +1,156 @@
+# DTEP-F Payment Interface
+
+**Version:** 0.1-draft
+**Status:** Specification in progress
+**Date:** 2026-06-01
+**Authors:** CSDT / SolidarityLab
+
+---
+
+## 1. Scope
+
+The payment interface is an optional output layer of DTEP-F. It provides the business entity with a Taler wallet interface for B2B payment cryptographically bound to the M0 coin commitment of a specific invoice. One action simultaneously closes the DRR obligation to the tax authority and the payment to the supplier.
+
+The payment interface is not a mandatory component of the protocol chain — the DRR record is valid regardless of whether payment is executed via Taler or any other mechanism. The interface is added value, not a prerequisite.
+
+**Relation to transformation-layer.md:** The payment interface is a superstructure over the atomic Taler Exchange operation defined in [transformation-layer.md](transformation-layer.md). The EN 16931 XML invoice enters the atomic operation; the coin commitment produced in Step 1 of that operation is simultaneously the DRR evidence anchor (M0 in DRRDB) and the payment reference in the Taler Contract Terms. No additional protocol is defined — Taler Contract Terms cover all payment scenarios natively.
+
+---
+
+## 2. Taler Contract Terms as Payment Protocol
+
+Taler Contract Terms (the Taler smart contract mechanism) natively cover all payment scenarios relevant to B2B invoice settlement without requiring a separate payment protocol:
+
+| Scenario | Taler Contract Terms coverage |
+|---|---|
+| Advance payment | Pay-before-delivery contract with M0 as order reference |
+| Subsequent payment | Pay-after-delivery contract with M0 as order reference |
+| Partial payment | Partial fulfillment terms with remainder tracked by Exchange |
+| Credit note | New coin commitment on corrected invoice; original contract voided |
+| Disputed payment | Contract Terms carry dispute resolution endpoint |
+
+The payment protocol is Taler. DTEP-F defines only the binding between the EN 16931 invoice lifecycle and the Taler Contract Terms — not a new payment protocol.
+
+---
+
+## 3. Architectural Position
+
+M0 coin commitment serves simultaneously as:
+
+- DRR evidence in the DRRDB public level (from transformation-layer.md)
+- Order reference in Taler Contract Terms
+
+The two roles of M0 are independent: payment is not a condition for DRR validity, and DRR validity does not depend on payment. The binding is cryptographic — an observer cannot link the DRR record to the payment without access to Taler Exchange.
+
+```
+EN 16931 XML
+        │
+        ▼
+Taler Exchange [atomic operation — transformation-layer.md]
+        │
+        ├─ M0 coin commitment
+        │         │
+        │         ├──────────────────────┐
+        │         ▼                      ▼
+        │    DRRDB public level    Taler Contract Terms
+        │    (DRR evidence)        (payment reference)
+        │
+        └─ Artifact A → DRRDB protected level
+                        (payment status on settlement)
+```
+
+---
+
+## 4. Contract Terms Binding
+
+At M0 coin commitment generation, Exchange simultaneously produces a Taler Contract Terms object referencing M0:
+
+```json
+{
+  "summary": "EN 16931 invoice payment",
+  "order_id": "<m0_coin_commitment>",
+  "amount": "<M5_value> EUR",
+  "pay_deadline": "<ISO8601>",
+  "fulfillment_url": "<corner5_middleware_endpoint>",
+  "merchant": {
+    "name": "<scrubbed — DD-18>",
+    "instance": "<taler_merchant_instance_id>"
+  },
+  "products": [
+    {
+      "description": "<CPV_code>",
+      "price": "<M5_value> EUR",
+      "quantity": 1
+    }
+  ]
+}
+```
+
+The Contract Terms object is provided to Corner 5 Middleware and forwarded to the business entity (buyer) outside DRRDB — it is not stored in the public level. Only the M0 coin commitment appears in the public layer.
+
+---
+
+## 5. Wallet Interface
+
+The buyer receives the Contract Terms and imports them into a Taler wallet. The wallet:
+
+- Verifies M0 against Exchange
+- Displays amount, deadline, and supplier reference (scrubbed per DD-18)
+- Offers payment confirmation
+
+On confirmation, the wallet executes a standard Taler deposit operation. Exchange verifies coin redemption and records M0 as settled in the DRRDB protected level (Artifact A) — without disclosing payment identity in the public layer.
+
+---
+
+## 6. Settlement in DRRDB
+
+On successful payment, Exchange updates Artifact A in the protected level with payment confirmation. The public level of DRRDB is not updated — payment status is not public information.
+
+On Audit Request, the tax authority sees payment status in Artifact A: settled / partially settled / outstanding. This is an additional audit indicator requiring no additional administrative action.
+
+---
+
+## 7. Invoice Lifecycle Mapping
+
+EN 16931 defines four lifecycle events. Taler Contract Terms handle each natively:
+
+| EN 16931 event | Taler Contract Terms handling |
+|---|---|
+| Issuance | New Contract Terms with new M0 |
+| Cancellation | Contract Terms voided; M0 marked cancelled in Exchange |
+| Correction | New Contract Terms with new M0; reference to original M0 in protected level |
+| Credit note | Partial refund via Taler refund protocol; original M0 partially redeemed |
+
+No custom lifecycle protocol is required. Taler Contract Terms and the Taler refund protocol cover all cases.
+
+---
+
+## 8. Open Issues
+
+The following define the research and specification agenda for the payment interface. They represent the boundary of the current specification and the forward work programme.
+
+**Cross-border payment and Exchange federation**
+When buyer and seller use different national Taler Exchange instances, the Contract Terms must reference a resolvable Exchange endpoint across jurisdictions. The cross-Exchange payment reference verification protocol requires a federation model analogous to the open issue in [signing-layer.md](signing-layer.md).
+
+**Merchant integration API**
+The supplier (seller) must be able to verify a received payment against a specific M0 without disclosure of buyer identity. The merchant API specification — how the supplier receives payment confirmation from Exchange — requires separate specification in coordination with the Taler merchant API team.
+
+**Taler wallet B2B UX**
+Current Taler wallet implementations are optimised for B2C micropayments. B2B invoice payment with amounts in thousands of euros and deadlines in days or weeks requires a specific UX flow distinct from standard Taler checkout. A reference UX specification for the B2B context is a contribution to the Taler wallet ecosystem.
+
+**PSD2 and national payment law compliance**
+PSD2 and national payment legislation define requirements for B2B payments above certain thresholds. Compatibility of Taler coin mechanics with these requirements across Member States requires legal analysis before operational deployment.
+
+**Contract Terms standardisation**
+The Contract Terms binding defined in Section 4 is a DTEP-F proposal. Standardisation of EN 16931 invoice fields as Taler Contract Terms parameters — particularly the scrubbed merchant and product fields — requires coordination with the Taler core team and potential extension of the Contract Terms schema.
+
+---
+
+## References
+
+- GNU Taler Contract Terms: https://docs.taler.net/taler-merchant-api-tutorial.html
+- GNU Taler refund protocol: https://docs.taler.net/taler-exchange-httpapi.html
+- EN 16931-1:2025 invoice lifecycle: https://www.cen.eu/work/areas/ict/ebusiness/pages/ws-einvoicing.aspx
+- DTEP-F transformation layer: [transformation-layer.md](transformation-layer.md)
+- DTEP-F signing layer: [signing-layer.md](signing-layer.md)
+- DTEP-F DRRDB layer: [drrdb-layer.md](drrdb-layer.md)
