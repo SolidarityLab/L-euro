@@ -63,4 +63,4 @@ For questions outside the scope of GitHub issues:
 
 - Organisation: Centre for Solidary Digital Transformation (CSDT) / SolidarityLab
 - Website: https://solidaritylab.eu
-- Protocol repository: https://github.com/SolidarityLab-CSDT/dtep-s
+- Protocol repository: https://github.com/SolidarityLab/L-euro/blob/main/DTEP/DTEP-S/
