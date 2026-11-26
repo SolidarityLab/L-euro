@@ -3,7 +3,7 @@ message: "If you use or refer to this specification, please cite it using the me
 type: software
 title: "L-euro: open protocol for digital entitlements (vouchers, coupons, tickets, discounts)"
 version: "0.1.0-draft"
-date-released: "2026-12-01"
+date-released: "2026-11-26"
 license: CC-BY-4.0
 repository-code: "https://github.com/SolidarityLab/L-euro"
 url: "https://github.com/SolidarityLab/L-euro"

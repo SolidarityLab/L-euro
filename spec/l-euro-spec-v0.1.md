@@ -1,6 +1,6 @@
 # L-euro Protocol Specification — v0.1 (draft)
 
-- **Release:** 0.1.0-draft, 2026-12-01 (specification text v0.1; schema field `"v": "0.1"`)
+- **Release:** 0.1.0-draft, 2026-11-26 (specification text v0.1; schema field `"v": "0.1"`)
 - **Status:** Working draft for public comment. Not stable. Sections marked
   *TODO* are placeholders.
 - **Editor:** Center for Solidarity Digital Transformation Association (CSDT), Sofia, Bulgaria, UIC 208569411

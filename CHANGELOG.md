@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0-draft — 2026-12-01
+## v0.1.0-draft — 2026-11-26
 
 First public draft for comment. Added:
 
