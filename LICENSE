@@ -1,0 +1,19 @@
+This repository uses two licences.
+
+1. Specification text and documentation
+   (everything under spec/ and docs/, and the files README*.md, GOVERNANCE.md,
+   CONTRIBUTING.md, CHANGELOG.md)
+   are licensed under the Creative Commons Attribution 4.0 International licence
+   (CC BY 4.0). Full text: LICENSES/CC-BY-4.0.txt
+   SPDX-License-Identifier: CC-BY-4.0
+
+2. Schemas, examples and code
+   (everything under schemas/, examples/ and any source code)
+
+3. The folder parents/ (DTEP-S, DTEP-F) keeps its own licence files (EUPL-1.2).
+   are licensed under the European Union Public Licence v. 1.2 (EUPL-1.2).
+   Full text: LICENSES/EUPL-1.2.txt
+   SPDX-License-Identifier: EUPL-1.2
+
+Copyright (c) 2026 Center for Solidarity Digital Transformation Association
+(Център за солидарна дигитална трансформация), ЕИК 208569411

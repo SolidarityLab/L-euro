@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:l-euro:schema:v0.1:redemption-request",
+  "title": "L-euro Redemption Request (draft v0.1)",
+  "description": "Request created by the acceptor system and shown as QR or NFC tag (spec 7.3). Draft, not stable. SPDX-License-Identifier: EUPL-1.2",
+  "type": "object",
+  "required": [
+    "v",
+    "acceptor",
+    "offer",
+    "amount",
+    "unit",
+    "goodsClass",
+    "nonce",
+    "issuedAt",
+    "expiresAt",
+    "acceptorSignature"
+  ],
+  "properties": {
+    "v": {
+      "const": "0.1"
+    },
+    "acceptor": {
+      "type": "string",
+      "description": "Acceptor identifier registered at the depositary"
+    },
+    "offer": {
+      "type": "object",
+      "required": [
+        "ref",
+        "version",
+        "offerHash"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "description": "Item or order reference in the acceptor's own system"
+        },
+        "version": {
+          "type": "string"
+        },
+        "offerHash": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "description": "base64url SHA-256 of the canonical offer text shown to the holder"
+        },
+        "text": {
+          "type": "string",
+          "description": "Short display text; MAY be omitted if fetched from the depositary"
+        }
+      }
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "unit": {
+      "enum": [
+        "EUR",
+        "count",
+        "percent"
+      ]
+    },
+    "goodsClass": {
+      "type": "object",
+      "required": [
+        "scheme",
+        "code"
+      ],
+      "properties": {
+        "scheme": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 16,
+      "description": "Single-use; idempotency key for the debit"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "acceptorSignature": {
+      "type": "string",
+      "description": "Detached JWS over the canonical form of all other fields"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use or refer to this specification, please cite it using the metadata below."
+type: software
+title: "L-euro: open protocol for digital entitlements (vouchers, coupons, tickets, discounts)"
+version: "0.1.0-draft"
+date-released: "2026-12-01"  # TODO: set on release
+license:
+  - CC-BY-4.0
+  - EUPL-1.2
+repository-code: "https://github.com/SolidarityLab/L-euro"
+url: "https://github.com/SolidarityLab/L-euro"
+abstract: >-
+  L-euro defines a common data model, lifecycle and six separate roles
+  (issuer, payer, holder, acceptor, depositary, cover custodian) for
+  entitlements that are issued today as vouchers, coupons, tickets and
+  discounts. The depositary is a dispatcher that keeps a register of
+  pseudonymous holder accounts and events; it does not issue rights or
+  identity attributes and does not hold the cover. Entitlements are not
+  money. Draft for public comment.
+keywords:
+  - vouchers
+  - entitlements
+  - passkey
+  - EUDI Wallet
+  - open protocol
+  - public programmes
+authors:
+  - name: "Center for Solidarity Digital Transformation Association"
+    alias: "ЦСДТ, Център за солидарна дигитална трансформация"
+    city: "Sofia"
+    country: "BG"
+    email: "office@solidaritylab.eu"
+    website: "https://solidaritylab.eu/"
+  # TODO (optional): add persons, e.g.
+  # - family-names: "..."
+  #   given-names: "..."
+  #   orcid: "https://orcid.org/0000-0000-0000-0000"

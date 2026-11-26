@@ -1,0 +1,17 @@
+{
+  "v": "0.1",
+  "acceptor": "urn:example:acceptor:canteen-c",
+  "offer": {
+    "ref": "menu-2026-11-26-lunch-2",
+    "version": "3",
+    "offerHash": "EXAMPLE-NOT-A-HASH-000000000000000000000000",
+    "text": "Lunch menu 2, 1 portion"
+  },
+  "amount": 5.2,
+  "unit": "EUR",
+  "goodsClass": { "scheme": "COICOP-2018", "code": "11.1" },
+  "nonce": "example-nonce-7f3a9c21",
+  "issuedAt": "2026-11-26T12:00:00Z",
+  "expiresAt": "2026-11-26T12:02:00Z",
+  "acceptorSignature": "EXAMPLE-NOT-A-SIGNATURE"
+}

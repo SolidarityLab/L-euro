@@ -1,0 +1,26 @@
+{
+  "v": "0.1",
+  "eventId": "urn:example:event:0042",
+  "type": "redeem",
+  "entitlement": "urn:l-euro:example:0001",
+  "account": "urn:example:account:opaque-ref-123",
+  "seq": 3,
+  "prevHash": "EXAMPLE-NOT-A-HASH",
+  "occurredAt": "2026-11-26T12:00:41Z",
+  "recordedAt": "2026-11-26T12:00:41Z",
+  "actor": "acceptor:urn:example:acceptor:canteen-c",
+  "amount": 5.2,
+  "unit": "EUR",
+  "balanceAfter": 94.8,
+  "idempotencyKey": "example-nonce-7f3a9c21",
+  "evidence": {
+    "offerHash": "EXAMPLE-NOT-A-HASH-000000000000000000000000",
+    "acceptorSignature": "EXAMPLE-NOT-A-SIGNATURE",
+    "webauthn": {
+      "credentialId": "EXAMPLE",
+      "authenticatorData": "EXAMPLE",
+      "clientDataJSON": "EXAMPLE",
+      "signature": "EXAMPLE-NOT-A-SIGNATURE"
+    }
+  }
+}
