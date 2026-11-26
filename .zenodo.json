@@ -1,36 +1,115 @@
 {
-  "title": "L-euro: open protocol for digital entitlements (vouchers, coupons, tickets, discounts)",
   "upload_type": "software",
-  "description": "<p>L-euro defines a common data model, lifecycle and six separate roles (issuer, payer, holder, acceptor, depositary, cover custodian) for entitlements that are issued today as vouchers, coupons, tickets and discounts. Entitlements are not money. The depositary acts as a dispatcher: it keeps a register of pseudonymous holder accounts and events, and does not issue rights or identity attributes or hold the cover. Holders confirm use with a passkey on a supplier's signed QR or NFC request; presentation from the EUDI Wallet is a planned channel.</p><p>This release is a draft for public comment. Specification text: CC BY 4.0. Schemas and code: EUPL 1.2.</p>",
-  "creators": [
-    {
-      "name": "Center for Solidarity Digital Transformation Association",
-      "affiliation": "Център за солидарна дигитална трансформация (ЦСДТ), ЕИК 208569411"
-    }
-  ],
-  "license": "cc-by-4.0",
-  "keywords": [
-    "vouchers",
-    "entitlements",
-    "passkey",
-    "WebAuthn",
-    "EUDI Wallet",
-    "open protocol",
-    "public programmes"
-  ],
+  "title": "L-euro: an open protocol for digital entitlements (vouchers, coupons, tickets, discounts). Specification v0.1, draft for public comment",
+  "version": "0.1.0-draft",
   "language": "eng",
   "access_right": "open",
-  "communities": [
+  "license": "cc-by-4.0",
+  "description": "<p><strong>L-euro</strong> is an open, royalty-free protocol for <em>entitlements</em>: rights to goods or services that are issued today as meal and social vouchers, coupons, tickets and discounts by employers, municipalities and public programmes. One data model, one lifecycle and six separable roles (issuer, payer, holder, acceptor, depositary, cover custodian) serve every programme, so an integrator implements the protocol once.</p><p><strong>Entitlements are not money.</strong> L-euro is not e-money, not a payment system and not related to the digital euro. The depositary keeps a register of pseudonymous holder accounts and an append-only, hash-chained event log; it does not issue rights or identity attributes and does not hold the cover, which stays with a separate, replaceable cover custodian. Holders confirm a redemption by scanning the acceptor's signed QR code or NFC tag and approving it with a passkey (W3C WebAuthn); no biometric data leaves the holder's device. Settlement and EN 16931 e-invoicing receive only signed aggregates per acceptor and period, never holder accounts. Presentation from the EU Digital Identity Wallet (OpenID4VP) is a planned channel.</p><p>This release (0.1.0-draft) is a <strong>working draft for public comment, not for implementation</strong>. It contains the specification (English), JSON Schemas (draft 2020-12) and examples, governance and contribution rules, and a position paper in Bulgarian.</p><p>Licences: specification and documentation CC BY 4.0; schemas, examples and code EUPL-1.2 (see LICENSE). Maintainer: Center for Solidarity Digital Transformation Association (CSDT), Sofia, Bulgaria. Comments: https://github.com/SolidarityLab/L-euro/issues</p>",
+  "creators": [
     {
-      "identifier": "TODO-community-id"
+      "name": "Center for Solidarity Digital Transformation Association (CSDT)"
     }
+  ],
+  "keywords": [
+    "digital entitlements",
+    "vouchers",
+    "meal vouchers",
+    "social vouchers",
+    "coupons",
+    "tickets",
+    "open protocol",
+    "open standard",
+    "digital public infrastructure",
+    "digital commons",
+    "public programmes",
+    "pseudonymous register",
+    "privacy by design",
+    "data minimisation",
+    "GDPR",
+    "passkey",
+    "WebAuthn",
+    "FIDO2",
+    "EUDI Wallet",
+    "eIDAS 2.0",
+    "OpenID4VP",
+    "selective disclosure",
+    "EN 16931",
+    "e-invoicing",
+    "JSON Schema",
+    "EUPL"
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/SolidarityLab/L-euro",
-      "relation": "isSupplementTo",
+      "identifier": "10.17487/RFC2119",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.17487/RFC8174",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.17487/RFC7515",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.17487/RFC8785",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://www.w3.org/TR/webauthn-3/",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://openid.net/specs/openid-4-verifiable-presentations-1_0.html",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/reg/2024/1183/oj",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/reg/2016/679/oj",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/dir/2016/1065/oj",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/dir/2015/2366/oj",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/dir/2014/55/oj",
+      "relation": "references",
+      "scheme": "url"
+    },
+    {
+      "identifier": "http://data.europa.eu/eli/reg/2024/903/oj",
+      "relation": "references",
       "scheme": "url"
     }
   ],
-  "notes": "Schemas and code in this release are licensed under EUPL-1.2; see LICENSE in the archive."
+  "notes": "Draft for public comment; not stable and not for implementation. The Zenodo licence field shows CC BY 4.0 for the specification text; the JSON Schemas, examples and any code in this archive are licensed under EUPL-1.2 (see LICENSE and LICENSES/).",
+  "communities": [
+    {
+      "identifier": "l-euro"
+    }
+  ]
 }

@@ -15,8 +15,8 @@ comment**, and all feedback is welcome.
 
 ## Language
 
-The specification is written in English. Explanatory and position documents
-are in Bulgarian and English.
+The specification is written in English. The position paper is in Bulgarian;
+an English version is planned.
 
 ## Licensing of contributions
 
@@ -31,10 +31,7 @@ sign off your commits with `git commit -s`.
 ## Conduct
 
 Be respectful and assume good faith. The maintainer may hide or lock
-discussions that are abusive. [TODO: adopt a full code of conduct, e.g.
-Contributor Covenant 2.1, if desired]
+discussions that are abusive. The project follows the Contributor Covenant 2.1
+(https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+Reports: office@solidaritylab.eu.
 
-## Mirrors
-
-The main repository is on GitHub. The Codeberg repository is a read-only
-mirror; please open issues and pull requests on GitHub.

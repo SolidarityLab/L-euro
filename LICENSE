@@ -9,11 +9,13 @@ This repository uses two licences.
 
 2. Schemas, examples and code
    (everything under schemas/, examples/ and any source code)
-
-3. The folder parents/ (DTEP-S, DTEP-F) keeps its own licence files (EUPL-1.2).
    are licensed under the European Union Public Licence v. 1.2 (EUPL-1.2).
    Full text: LICENSES/EUPL-1.2.txt
    SPDX-License-Identifier: EUPL-1.2
 
-Copyright (c) 2026 Center for Solidarity Digital Transformation Association
-(Център за солидарна дигитална трансформация), ЕИК 208569411
+3. The folder parents/ (DTEP-S, DTEP-F) is kept unchanged with its own
+   licence files (EUPL-1.2). The licensor named there as "Centre for Solidary
+   Digital Transformation (CSDT)" is the same legal entity as below.
+
+Copyright (c) 2026 Center for Solidarity Digital Transformation Association (CSDT)
+(Център за солидарна дигитална трансформация), UIC 208569411

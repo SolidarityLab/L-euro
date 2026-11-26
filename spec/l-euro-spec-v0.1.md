@@ -1,12 +1,18 @@
 # L-euro Protocol Specification — v0.1 (draft)
 
+- **Release:** 0.1.0-draft, 2026-12-01 (specification text v0.1; schema field `"v": "0.1"`)
 - **Status:** Working draft for public comment. Not stable. Sections marked
   *TODO* are placeholders.
-- **Editor:** Center for Solidarity Digital Transformation Association (ЦСДТ), ЕИК 208569411
+- **Editor:** Center for Solidarity Digital Transformation Association (CSDT), Sofia, Bulgaria, UIC 208569411
 - **Licence:** CC BY 4.0 (text). Schemas referenced here are under EUPL 1.2.
 - **Version history:** see [CHANGELOG.md](../CHANGELOG.md)
 
-The key words MUST, MUST NOT, SHOULD and MAY are to be interpreted as in RFC 2119.
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in BCP 14 [RFC 2119] [RFC 8174]
+when, and only when, they appear in all capitals, as shown here.
+
+L-euro is not related to the digital euro and is not a currency.
 
 ## 0. Structure: protocol layers
 
@@ -19,7 +25,7 @@ refer to a version of it.
 | P0 Model | forms, roles, attributes, cover modes | §1–5, `schemas/entitlement.schema.json` |
 | P1 Register (holder accounts, *партида*) | accounts, events, idempotency, extracts for authorities | §6, `schemas/event.schema.json` |
 | P2 Offers | the acceptor's catalogue and signed offer versions; `offerHash` | §8 (informative in v0.1) |
-| P3 Presentation | channels A–E, passkey, evidence | §7, `schemas/redemption-request.schema.json` |
+| P3 Presentation | channels A–D, passkey, evidence | §7, `schemas/redemption-request.schema.json` |
 | P4 Cover, settlement and invoicing | cover custodian separate from the register; payment rails; e-invoicing | §9 |
 | P5 Interfaces | APIs for issuer, acceptor and authority | *TODO (v0.2)* |
 | Cross-cutting | conformance, security and privacy, governance | §10–11, GOVERNANCE.md |
@@ -28,8 +34,8 @@ refer to a version of it.
 
 This specification defines a common data model, lifecycle and roles for
 **entitlements** (rights to a performance): claims of a holder against an
-acceptance network for a defined class of goods or services, covered in advance
-by a payer. An entitlement is not money: it MUST NOT be convertible to money
+acceptance network for a defined class of goods or services, covered by a
+payer. An entitlement is not money: it MUST NOT be convertible to money
 unless the issuing programme explicitly allows it.
 
 Out of scope: electronic money, payment accounts, money credit, issuance of
@@ -44,9 +50,9 @@ fiscal receipts, and the acceptor's catalogue, stock and sales systems (§8).
 | Form | One of: `voucher`, `coupon`, `ticket`, `discount`. |
 | Programme | The legal or contractual regime under which an entitlement is issued. |
 | Cover | The value or capacity that secures an entitlement. |
-| Standard credit | An entitlement whose cover is not paid in advance but is owed by the holder and guaranteed against the holder's insolvency. |
-| Holder account (*партида*) | A pseudonymous account of a holder at the depositary. It holds the holder's entitlements, their balances and the holder's passkey public keys. |
+| Holder account (*партида*) | A pseudonymous account of a holder at the depositary. It holds the holder's entitlements, their balances and the holder's passkey public keys. It is not a payment account within the meaning of Directive (EU) 2015/2366. |
 | Depositary | The role that keeps the register: holder accounts, acceptor keys, offer hashes and the event log. It acts as a dispatcher. It does not issue entitlements, identity or attributes, does not hold the cover, and is not a party to the entitlement. |
+| Acceptor (supplier) | The party that delivers goods or services against an entitlement. "Supplier" is used as a synonym in informative text. |
 | Cover custodian | The role that holds the cover of a programme (funds or capacity), for example a bank, a payment institution, an operator or a public fund. It is separate from the depositary and replaceable. |
 | Offer | An acceptor's promise of specific goods or a service at a price, published in the acceptor's own system. |
 | Offer version | An immutable, signed text of an offer. Its hash (`offerHash`) is what the holder confirms and what the event log records. |
@@ -81,7 +87,7 @@ replaced without changing the other.
 
 ## 5. Data model
 
-The minimum attribute set has 18 attributes in 7 groups. The normative schema
+The minimum attribute set has 22 attributes in 7 groups. The normative schema
 is [`schemas/entitlement.schema.json`](../schemas/entitlement.schema.json).
 
 | Group | Attribute | Required |
@@ -94,12 +100,16 @@ is [`schemas/entitlement.schema.json`](../schemas/entitlement.schema.json).
 | Regime | `taxTreatment` | optional |
 | Proof | `status`, `signature`, `revocationUri` | yes |
 
+`creditLine` means a credit line of the payer towards the cover custodian; no
+credit is extended to the holder.
+
 *TODO: choice of goods classification (COICOP is proposed) and its level of detail.*
 
 ## 6. Lifecycle and events
 
-Every entitlement passes through the same events, and each event MUST be
-recorded separately:
+Every entitlement passes through the same eight steps (nine event types, as
+`expire` and `revoke` are separate), and each event MUST be recorded
+separately:
 
 1. `request` (recorded even if no entitlement is issued)
 2. `issue`
@@ -145,15 +155,19 @@ the offline fallback in 7.5.
 
 | Channel | Direction | Holder steps | Status in v0.1 |
 |---|---|---|---|
-| A. Acceptor-presented request (QR or NFC tag) + holder passkey | acceptor → holder | scan or tap, then fingerprint | primary |
-| B. NFC card emulation by the holder app | holder → acceptor terminal | tap, then fingerprint | optional |
+| A. Acceptor-presented request (QR or NFC tag) + holder passkey | acceptor → holder | scan or tap, then user verification | primary |
+| B. NFC card emulation by the holder app | holder → acceptor terminal | tap, then user verification | optional |
 | C. Holder-presented signed code (barcode / QR) | holder → acceptor | show code | fallback, offline |
 | D. EUDI Wallet presentation (OpenID4VP) | holder → acceptor | wallet consent | future, *TODO* |
-| E. Emergency access on a certified acceptor terminal | holder → acceptor | fingerprint + PIN | research (7.8) |
 
 Implementations MUST support channel A. Third-party wallets (e.g. Google or
 Apple Wallet passes) MAY be offered as display surfaces for channel C but are
 not a source of truth for the balance.
+
+User verification means the device's own check: biometric or device PIN
+(WebAuthn `userVerification: "required"`). Emergency access with an external
+sensor is a research topic outside this specification
+([docs/research-emergency-access.md](../docs/research-emergency-access.md)).
 
 ### 7.2 Holder authentication (passkey)
 
@@ -184,8 +198,10 @@ A request MUST contain:
 - `goodsClass` of the offer;
 - `nonce`, `issuedAt` and `expiresAt` (a short validity window, RECOMMENDED
   120 seconds or less);
-- `acceptorSignature` – a JWS over all fields above, made with a key the
-  acceptor registered at the depositary.
+- `acceptorSignature` – a JWS with detached payload (RFC 7515, Appendix F) over
+  the JCS (RFC 8785) serialisation of the request object without the
+  `acceptorSignature` member, made with a key the acceptor registered at the
+  depositary.
 
 Flow:
 
@@ -195,11 +211,12 @@ Flow:
    acceptor signature, the time window, that the nonce is unused, and that the
    holder has an entitlement covering `goodsClass` and `amount`. It then
    returns the display text and a WebAuthn challenge.
-3. The challenge MUST be `SHA-256(canonical request || entitlement id ||
+3. The challenge MUST be `SHA-256(JCS(request) || entitlement id ||
    depositary nonce)`. The holder's signature thus binds this exact version
    of the offer at this moment.
-4. The app shows acceptor, offer and amount. The holder confirms with the
-   device biometric (WebAuthn user verification required).
+4. The app shows acceptor, offer and amount. The holder confirms with user
+   verification on the device (biometric or device PIN; WebAuthn
+   `userVerification: "required"`).
 5. The depositary verifies the assertion and debits the balance atomically.
    The `nonce` is the idempotency key. The depositary records a `redeem`
    event (see 7.6) and notifies the acceptor system by webhook.
@@ -244,29 +261,6 @@ which offer, and when.
 *TODO: mapping to an EUDI Wallet attestation format (SD-JWT VC / mdoc) for
 channel D. The attestation states the right; the balance stays in the
 register and is checked on presentation.*
-
-### 7.8 Emergency access on a third-party terminal (research, non-normative)
-
-Purpose: let a holder without their own device reach their account once, at
-an acceptor, with a fingerprint.
-
-- Phone operating systems do not give apps the fingerprint image. The built-in
-  sensor only confirms the device owner. Emergency access therefore needs an
-  **external certified sensor** attached to an acceptor terminal that runs the
-  L-euro app.
-- The sensor SHOULD have presentation attack detection (ISO/IEC 30107-3) and
-  MUST encrypt its output to the depositary key, so that neither the terminal
-  nor its operating system sees the raw image.
-- The terminal app MUST prove its integrity (Play Integrity / App Attest) and
-  be registered to an acceptor.
-- The depositary stores only a protected, revocable template (ISO/IEC 24745).
-  Matching uses challenge–response, so a recorded response cannot be replayed.
-- Each use MUST also require a holder PIN, MUST be capped at a low amount set
-  by the programme, and MUST be single-use until the holder re-binds a device.
-- Templates are special-category data (GDPR art. 9): opt-in with explicit
-  consent and a data protection impact assessment are REQUIRED.
-
-*TODO: sensor certification profile; template protection scheme; DPIA.*
 
 ## 8. Offers and the acceptor interface (informative in v0.1)
 
@@ -323,7 +317,7 @@ hash before redemption is mandatory for programmes with an offer whitelist.*
   depositary instructs settlement from the event log; the custodian pays.
 - **Settlement is independent of the payment rail.** Payment to the acceptor
   MAY run over SEPA, an instant payment scheme, GNU Taler or any other rail.
-- **The anonymous transaction layer is strictly separate from invoicing.**
+- **The pseudonymous transaction layer (P1) is strictly separate from invoicing (P4).**
   The register (P1) records deliveries to pseudonymous holder accounts.
   Settlement (P4) receives only a signed aggregate per acceptor, programme,
   payer and period: number of redemptions, amounts per VAT rate and goods
@@ -343,8 +337,10 @@ hash before redemption is mandatory for programmes with an offer whitelist.*
   creates and confirms redemption requests.
 
 *TODO: cover modes per custodian; settlement cycle; reconciliation of channel C;
-legal status of the custodian (limited network exclusion or e-money);
-VAT treatment (single- or multi-purpose voucher).*
+legal status of the custodian (limited network exclusion under Directive (EU)
+2015/2366, art. 3(k), or e-money); VAT treatment (single- or multi-purpose
+voucher under Council Directive (EU) 2016/1065); e-invoicing to public payers
+under Directive 2014/55/EU.*
 
 ## 10. Conformance
 
@@ -352,8 +348,10 @@ VAT treatment (single- or multi-purpose voucher).*
 
 ## 11. Security and privacy considerations
 
-- No biometric data is stored in the register (§7.2). The research channel E
-  (§7.8) is the only exception and is opt-in.
+- No biometric data is stored in the register (§7.2).
+- The depositary can link all redemptions of one holder account. L-euro v0.1
+  offers pseudonymity towards acceptors, issuers and payers, not
+  unlinkability towards the depositary.
 - Event records in the register are pseudonymous personal data and MUST be
   protected accordingly (data protection by design). The aggregate passed to
   settlement SHOULD NOT allow re-identification (§9).
@@ -375,3 +373,20 @@ VAT treatment (single- or multi-purpose voucher).*
   especially in social programmes.
 - The name "L-euro" suggests a currency while the protocol insists rights are not money.
 - Tickets and coupons are checked only against existing schemes; validation pending.
+- `goodsClass` holds one code, while a meal voucher often covers several
+  classes (e.g. COICOP 01.1 and 11.1).
+- `status` has no value for a partly used divisible voucher; settlement is
+  aggregated per period rather than per entitlement.
+
+## Annex B. References
+
+- RFC 2119 and RFC 8174 (BCP 14): key words.
+- RFC 7515: JSON Web Signature. RFC 8785: JSON Canonicalization Scheme.
+- W3C Web Authentication (WebAuthn) Level 3.
+- OpenID for Verifiable Presentations 1.0; EUDI Wallet Architecture and
+  Reference Framework (channel D, planned).
+- Regulation (EU) 2024/1183 (eIDAS 2.0). Regulation (EU) 2016/679 (GDPR).
+- Directive (EU) 2015/2366 (PSD2). Council Directive (EU) 2016/1065 (VAT on
+  vouchers). Directive 2014/55/EU (e-invoicing in public procurement);
+  EN 16931.
+- Regulation (EU) 2024/903 (Interoperable Europe Act).

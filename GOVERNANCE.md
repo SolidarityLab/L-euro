@@ -1,7 +1,7 @@
 # Governance (draft)
 
 > **Status: proposed.** The bodies described here do not exist yet. Until the
-> Implementers' Council is formed, ЦСДТ acts as interim maintainer under the
+> Implementers' Council is formed, CSDT acts as interim maintainer under the
 > rules below.
 
 ## Principles
@@ -18,13 +18,18 @@
 
 | Body | Who | Does |
 |---|---|---|
-| Implementers' Council | One seat per organisation with a conformant or in-progress implementation | Accepts changes to the specification by rough consensus; falls back to a 2/3 vote |
+| Implementers' Council | One seat per organisation with a conformant or in-progress implementation, as recognised by the Council | Accepts changes to the specification by rough consensus; falls back to a 2/3 vote |
 | Protocol Maintainer | Elected by the Council for a fixed term (proposed: 2 years) | Runs the work, edits, cuts versions. No veto. |
 | Contributors | Anyone | Open issues and pull requests, comment on drafts |
 
-Interim: ЦСДТ is the Protocol Maintainer until the Council holds its first
-election, and commits to hand over within [TODO: e.g. 12 months] of the
-Council forming.
+Interim: CSDT is the Protocol Maintainer until the Council holds its first
+election, and will then hand the role over to the Council.
+
+*Open proposal.* The mechanism and the term of the handover are not decided
+yet, and proposals are welcome as issues. Options under discussion: (a) handover
+at the first election after the Council forms; (b) a fixed latest date, e.g. no
+later than 24 months after v1.0; (c) a transition in which CSDT keeps editorial
+duties without voting rights until a second maintainer is elected.
 
 ## Decision process
 

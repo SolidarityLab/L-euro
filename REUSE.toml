@@ -1,0 +1,21 @@
+version = 1
+SPDX-PackageName = "L-euro"
+SPDX-PackageDownloadLocation = "https://github.com/SolidarityLab/L-euro"
+
+[[annotations]]
+path = ["spec/**", "docs/**", "README.md", "README.bg.md", "GOVERNANCE.md", "CONTRIBUTING.md", "CHANGELOG.md", "CITATION.cff", ".zenodo.json", "LICENSE", "REUSE.toml", ".gitattributes"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Center for Solidarity Digital Transformation Association (CSDT), UIC 208569411"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = ["schemas/**", "examples/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Center for Solidarity Digital Transformation Association (CSDT), UIC 208569411"
+SPDX-License-Identifier = "EUPL-1.2"
+
+[[annotations]]
+path = ["parents/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Centre for Solidary Digital Transformation (CSDT), UIC 208569411"
+SPDX-License-Identifier = "EUPL-1.2"

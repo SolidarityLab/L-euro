@@ -17,14 +17,14 @@
     "ref": "urn:example:account:opaque-ref-123"
   },
   "acceptanceNetwork": {
-    "category": "food-retail"
+    "category": "catering"
   },
   "unit": "EUR",
   "nominal": 100,
   "balance": 100,
   "goodsClass": {
     "scheme": "COICOP-2018",
-    "code": "01.1"
+    "code": "11.1"
   },
   "divisible": true,
   "validFrom": "load",
