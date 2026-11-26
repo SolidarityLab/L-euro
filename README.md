@@ -2,6 +2,8 @@
 
 > **Status: draft v0.1 — for comment, not for implementation.**
 > Български: [README.bg.md](README.bg.md)
+>
+> L-euro is not related to the digital euro and is not a currency.
 
 L-euro is an open protocol for **entitlements to goods or services** that today
 are issued as vouchers, coupons, tickets and discounts. One data model describes
@@ -11,30 +13,30 @@ acceptor, depositary and cover custodian**.
 An integrator implements the protocol once and uses it for every programme. The
 holder's rights sit in a pseudonymous **holder account** (*партида*) at the
 depositary. To use a right, the holder scans a signed QR code or taps an NFC tag
-shown by the supplier's own system and confirms with a passkey (fingerprint or
-face on their own phone). No biometric data reaches the register, and no
+shown by the acceptor's own system and confirms with a passkey (fingerprint,
+face or device PIN on their own phone). No biometric data reaches the register, and no
 third-party wallet is needed. Presentation from the European Digital Identity
 Wallet (EUDI Wallet) is planned as an additional channel.
 
 ## Position
 
-- **Entitlements are not money.** A right cannot be converted into money and is
-  valid only in the acceptance network and for the class of goods written into it.
-  E-money, payment accounts and money credit are out of scope.
+- **Entitlements are not money.** A right cannot be converted into money, unless
+  the programme explicitly allows it, and is valid only in the acceptance network and for the class of goods written into it.
+  E-money, payment accounts and credit to the holder are out of scope.
 - **The depositary is a dispatcher, not an issuer.** It keeps the register:
   holder accounts, supplier keys, offer hashes and the event log. It does not
   issue rights, identity or attributes, and it is not a party to the right.
 - **The register is separate from the cover.** The money or capacity behind a
-  programme is held by a separate, replaceable cover custodian (a bank, an
-  operator or a fund), not by the depositary.
+  programme is held by a separate, replaceable cover custodian (a bank, a
+  payment institution, an operator or a public fund), not by the depositary.
 - **The acceptor sees the minimum:** form, class of goods, validity, and whether the
   balance covers the amount. Issuer and payer do not see the basket.
-- **The anonymous transaction layer is separate from invoicing.** Settlement and
+- **The pseudonymous transaction layer is separate from invoicing.** Settlement and
   e-invoices to the payer use only signed aggregates per supplier and period,
   never holder accounts.
 - **Every event is recorded.** Reporting to an authority is an extract of the
   event record, not a separate periodic report.
-- **A thin core.** The protocol stops at the Offer API: what the depositary has to
+- **A thin core.** The protocol stops at the Offer API (informative in v0.1): what the depositary has to
   verify. Catalogues stay with suppliers. Recipe books, booking, stock and till
   software are partner products on top of the API. L-euro does not issue fiscal
   receipts; suppliers keep their certified tills.
@@ -61,15 +63,18 @@ Wallet (EUDI Wallet) is planned as an additional channel.
   the balance always stays in the register.
 - **GNU Taler and payment systems:** L-euro is distinct from them and open to
   integration. Settlement to the acceptor can run over any payment rail.
-- **NGI / NLnet conventions:** used as a reference for repository and licensing
-  practice.
+- **Repository practice:** licensing and contribution rules follow common open
+  source conventions (REUSE, EUPL, DCO).
 
 ## Earlier work in this repository
 
 The folder [`parents/`](parents/) holds the earlier DTEP series (June 2026):
-DTEP-S (social layer) and DTEP-F (fiscal layer). They are kept unchanged for
+DTEP-S (social layer) and DTEP-F (fiscal layer). It is in the repository only
+and is not part of release archives. The drafts are kept unchanged for
 reference as predecessors of L-euro. They are not part of the L-euro
-specification and are not normative for it.
+specification and are not normative for it. Links and `$id` values inside
+`parents/` refer to the former location `DTEP/` and to the former governance
+model; they are kept as historical records.
 
 ## Licence
 
@@ -81,10 +86,12 @@ See [LICENSE](LICENSE) for the split. Anyone may implement the protocol without 
 ## Contributing and citing
 
 - Comments and proposals: see [CONTRIBUTING.md](CONTRIBUTING.md).
-- To cite this work, use the DOI of the release (see [CITATION.cff](CITATION.cff)).
+- To cite this work, see [CITATION.cff](CITATION.cff). After publication, the
+  DOI is shown on Zenodo and will be added here and to CITATION.cff in the next
+  release.
 
 ## Maintainer
 
-Maintained by **Center for Solidarity Digital Transformation Association** (ЦСДТ, Център за солидарна дигитална трансформация), Sofia, ЕИК 208569411,
-a member of the Bulgarian Institute for Standardization (BIS).
+Maintained by the **Center for Solidarity Digital Transformation Association
+(CSDT)**, Sofia, Bulgaria, UIC 208569411, a member of the Bulgarian Institute for Standardization (BIS).
 Contact: office@solidaritylab.eu · https://solidaritylab.eu/

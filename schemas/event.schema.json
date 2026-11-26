@@ -83,7 +83,8 @@
     },
     "idempotencyKey": {
       "type": "string",
-      "description": "For redeem: the nonce of the redemption request"
+      "description": "For redeem: the nonce of the redemption request",
+      "minLength": 16
     },
     "refersTo": {
       "type": "string",
@@ -124,7 +125,8 @@
       ],
       "properties": {
         "offerHash": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{43}$"
         },
         "acceptorSignature": {
           "type": "string"

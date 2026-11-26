@@ -1,12 +1,10 @@
 cff-version: 1.2.0
-message: "If you use or refer to this specification, please cite it using the metadata below."
+message: "If you use or refer to this specification, please cite it using the metadata below. Specification text CC BY 4.0; schemas and examples EUPL-1.2 (see LICENSE)."
 type: software
 title: "L-euro: open protocol for digital entitlements (vouchers, coupons, tickets, discounts)"
 version: "0.1.0-draft"
-date-released: "2026-12-01"  # TODO: set on release
-license:
-  - CC-BY-4.0
-  - EUPL-1.2
+date-released: "2026-12-01"
+license: CC-BY-4.0
 repository-code: "https://github.com/SolidarityLab/L-euro"
 url: "https://github.com/SolidarityLab/L-euro"
 abstract: >-
@@ -21,17 +19,14 @@ keywords:
   - vouchers
   - entitlements
   - passkey
+  - WebAuthn
   - EUDI Wallet
   - open protocol
   - public programmes
 authors:
-  - name: "Center for Solidarity Digital Transformation Association"
-    alias: "ЦСДТ, Център за солидарна дигитална трансформация"
+  - name: "Center for Solidarity Digital Transformation Association (CSDT)"
+    alias: "Център за солидарна дигитална трансформация"
     city: "Sofia"
     country: "BG"
     email: "office@solidaritylab.eu"
     website: "https://solidaritylab.eu/"
-  # TODO (optional): add persons, e.g.
-  # - family-names: "..."
-  #   given-names: "..."
-  #   orcid: "https://orcid.org/0000-0000-0000-0000"
