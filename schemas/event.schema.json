@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:l-euro:schema:v0.1:event",
+  "title": "L-euro Event (draft v0.1)",
+  "description": "One record of the append-only event log of a holder account (spec 6.1). Draft, not stable. SPDX-License-Identifier: EUPL-1.2",
+  "type": "object",
+  "required": [
+    "v",
+    "eventId",
+    "type",
+    "entitlement",
+    "account",
+    "seq",
+    "prevHash",
+    "occurredAt",
+    "recordedAt",
+    "actor"
+  ],
+  "properties": {
+    "v": {
+      "const": "0.1"
+    },
+    "eventId": {
+      "type": "string",
+      "description": "Unique identifier of the event"
+    },
+    "type": {
+      "enum": [
+        "request",
+        "issue",
+        "load",
+        "present",
+        "redeem",
+        "settle",
+        "expire",
+        "revoke",
+        "remainder"
+      ]
+    },
+    "entitlement": {
+      "type": "string",
+      "description": "Identifier of the entitlement; for 'request' MAY be a request reference when no entitlement was issued"
+    },
+    "account": {
+      "type": "string",
+      "description": "Pseudonymous holder account reference (партида). MUST NOT cross into settlement or invoicing."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sequence number within the account"
+    },
+    "prevHash": {
+      "type": "string",
+      "description": "Hash of the previous event of the same account; empty string for the first event"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor": {
+      "type": "string",
+      "description": "Role and identifier of the party that caused the event, e.g. acceptor id"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "unit": {
+      "enum": [
+        "EUR",
+        "count",
+        "percent"
+      ]
+    },
+    "balanceAfter": {
+      "type": "number",
+      "minimum": 0
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "description": "For redeem: the nonce of the redemption request"
+    },
+    "refersTo": {
+      "type": "string",
+      "description": "eventId of an earlier event this one corrects or completes"
+    },
+    "evidence": {
+      "$ref": "#/$defs/redeemEvidence"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "redeem"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "amount",
+          "unit",
+          "balanceAfter",
+          "idempotencyKey",
+          "evidence"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "redeemEvidence": {
+      "type": "object",
+      "description": "Evidence required for redeem via channels A or B (spec 7.6)",
+      "required": [
+        "offerHash",
+        "acceptorSignature",
+        "webauthn"
+      ],
+      "properties": {
+        "offerHash": {
+          "type": "string"
+        },
+        "acceptorSignature": {
+          "type": "string"
+        },
+        "webauthn": {
+          "type": "object",
+          "required": [
+            "credentialId",
+            "authenticatorData",
+            "clientDataJSON",
+            "signature"
+          ],
+          "properties": {
+            "credentialId": {
+              "type": "string"
+            },
+            "authenticatorData": {
+              "type": "string"
+            },
+            "clientDataJSON": {
+              "type": "string"
+            },
+            "signature": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

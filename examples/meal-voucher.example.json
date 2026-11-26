@@ -1,0 +1,39 @@
+{
+  "id": "urn:l-euro:example:0001",
+  "form": "voucher",
+  "programme": "urn:l-euro:programme:example-meal-vouchers",
+  "issuer": {
+    "id": "urn:example:issuer:operator-a"
+  },
+  "payers": [
+    {
+      "party": {
+        "id": "urn:example:payer:employer-b"
+      },
+      "share": 1
+    }
+  ],
+  "holder": {
+    "ref": "urn:example:account:opaque-ref-123"
+  },
+  "acceptanceNetwork": {
+    "category": "food-retail"
+  },
+  "unit": "EUR",
+  "nominal": 100,
+  "balance": 100,
+  "goodsClass": {
+    "scheme": "COICOP-2018",
+    "code": "01.1"
+  },
+  "divisible": true,
+  "validFrom": "load",
+  "validUntil": "P12M",
+  "transferable": false,
+  "convertible": false,
+  "coverMode": "prepaid",
+  "remainderRule": "toPayer",
+  "status": "issued",
+  "signature": "EXAMPLE-NOT-A-SIGNATURE",
+  "revocationUri": "https://example.org/revocation/0001"
+}
