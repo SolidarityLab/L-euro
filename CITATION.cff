@@ -4,6 +4,14 @@ type: software
 title: "L-euro: open protocol for digital entitlements (vouchers, coupons, tickets, discounts)"
 version: "0.1.0-draft"
 date-released: "2026-11-26"
+doi: "10.5281/zenodo.24580009"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24580009"
+    description: "Concept DOI, all versions"
+  - type: doi
+    value: "10.5281/zenodo.24580010"
+    description: "Version 0.1.0-draft"
 license: CC-BY-4.0
 repository-code: "https://github.com/SolidarityLab/L-euro"
 url: "https://github.com/SolidarityLab/L-euro"

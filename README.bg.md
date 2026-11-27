@@ -1,5 +1,7 @@
 # L-euro — отворен протокол за дигитални права
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24580009.svg)](https://doi.org/10.5281/zenodo.24580009)
+
 > **Статус: чернова v0.1 — за коментари, не за внедряване.**
 > English: [README.md](README.md)
 >

@@ -1,5 +1,7 @@
 # L-euro — open protocol for digital entitlements
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24580009.svg)](https://doi.org/10.5281/zenodo.24580009)
+
 > **Status: draft v0.1 — for comment, not for implementation.**
 > Български: [README.bg.md](README.bg.md)
 >
