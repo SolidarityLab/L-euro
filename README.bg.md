@@ -86,8 +86,8 @@ L-euro и не са нормативни за нея. Връзките и сто
 ## Участие и цитиране
 
 - Коментари и предложения: виж [CONTRIBUTING.md](CONTRIBUTING.md).
-- За цитиране: виж [CITATION.cff](CITATION.cff). След публикуването DOI се
-  вижда в Zenodo и ще бъде добавен тук и в CITATION.cff в следващата версия.
+- За цитиране: виж [CITATION.cff](CITATION.cff). Общ DOI за всички версии:
+  [10.5281/zenodo.24580009](https://doi.org/10.5281/zenodo.24580009).
 
 ## Поддръжка
 

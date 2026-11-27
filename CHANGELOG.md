@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.1-draft — 2026-11-27
+
+Position paper v0.2 (Bulgarian). The specification and schemas are unchanged.
+
+- New section 5: how L-euro builds on existing standards. L-euro is framed as an
+  interoperability profile with a small normative core (L-euro Core) and
+  per-standard profiles, each implemented as an open-source module.
+- Map of 26 elements against existing standards (annex A): 22 covered, four
+  gaps (entitlement model, register semantics, channel A binding, settlement
+  aggregate for e-invoicing).
+- Section 4.10 extended: only the core is proposed for standardisation;
+  sequence pilot → Rolling Plan via BDS → BDS SD or CWA; the specification
+  stays under CC BY 4.0 / EUPL-1.2.
+- Related initiatives (Rolling Plan, IETF SCITT, W3C SPC), open questions
+  (PSR/PSD3) and next steps updated. Sections 5–9 are renumbered 6–10.
+
 ## v0.1.0-draft — 2026-11-26
 
 First public draft for comment. Added:

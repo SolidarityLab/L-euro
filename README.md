@@ -88,9 +88,8 @@ See [LICENSE](LICENSE) for the split. Anyone may implement the protocol without 
 ## Contributing and citing
 
 - Comments and proposals: see [CONTRIBUTING.md](CONTRIBUTING.md).
-- To cite this work, see [CITATION.cff](CITATION.cff). After publication, the
-  DOI is shown on Zenodo and will be added here and to CITATION.cff in the next
-  release.
+- To cite this work, see [CITATION.cff](CITATION.cff). Concept DOI (all
+  versions): [10.5281/zenodo.24580009](https://doi.org/10.5281/zenodo.24580009).
 
 ## Maintainer
 
