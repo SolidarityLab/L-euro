@@ -1,5 +1,7 @@
 # L-euro — open protocol for digital entitlements
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24580009.svg)](https://doi.org/10.5281/zenodo.24580009)
+
 > **Status: draft v0.1 — for comment, not for implementation.**
 > Български: [README.bg.md](README.bg.md)
 >
@@ -86,9 +88,8 @@ See [LICENSE](LICENSE) for the split. Anyone may implement the protocol without 
 ## Contributing and citing
 
 - Comments and proposals: see [CONTRIBUTING.md](CONTRIBUTING.md).
-- To cite this work, see [CITATION.cff](CITATION.cff). After publication, the
-  DOI is shown on Zenodo and will be added here and to CITATION.cff in the next
-  release.
+- To cite this work, see [CITATION.cff](CITATION.cff). Concept DOI (all
+  versions): [10.5281/zenodo.24580009](https://doi.org/10.5281/zenodo.24580009).
 
 ## Maintainer
 
