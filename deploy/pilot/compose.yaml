@@ -1,0 +1,31 @@
+name: l-euro
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: "${DOMAIN}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv/site:ro
+      - caddy_data:/data
+      - caddy_config:/config
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    # no published ports: reachable only inside the compose network
+    environment:
+      POSTGRES_DB: leuro
+      POSTGRES_USER: leuro
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leuro -d leuro"]
+      interval: 10s
+      retries: 5
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+  pgdata: {}

@@ -1,0 +1,5 @@
+[Unit]
+Description=L-euro nightly database dump
+[Service]
+Type=oneshot
+ExecStart=/srv/l-euro/backup.sh

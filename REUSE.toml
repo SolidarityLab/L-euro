@@ -9,7 +9,7 @@ SPDX-FileCopyrightText = "2026 Center for Solidarity Digital Transformation Asso
 SPDX-License-Identifier = "CC-BY-4.0"
 
 [[annotations]]
-path = ["schemas/**", "examples/**"]
+path = ["schemas/**", "examples/**", "deploy/**"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Center for Solidarity Digital Transformation Association (CSDT), UIC 208569411"
 SPDX-License-Identifier = "EUPL-1.2"
