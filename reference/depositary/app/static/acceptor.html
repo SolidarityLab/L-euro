@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L-euro – демо каса</title>
+<style>
+  :root { --bg:#f6f7f5; --fg:#1d2420; --muted:#5d6862; --card:#fff; --line:#dfe3df; --accent:#1f7a4d; --warn:#a14a1a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121614; --fg:#e7ece9; --muted:#9aa69f; --card:#1b201d; --line:#2c332f; --accent:#46b981; --warn:#e39566; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:560px; margin:0 auto; padding:20px 16px 48px; }
+  h1 { font-size:1.3rem; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; font-size:.9rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:0 0 16px; }
+  .item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
+  .item:first-child { border-top:0; }
+  button { font:inherit; font-weight:600; border:0; border-radius:10px; padding:10px 16px; background:var(--accent); color:#fff; cursor:pointer; white-space:nowrap; }
+  .qr { background:#fff; border-radius:8px; padding:8px; display:inline-block; }
+  .qr svg { width:min(320px, 80vw); height:auto; display:block; }
+  .muted { color:var(--muted); font-size:.9rem; }
+  .ok { color:var(--accent); font-weight:650; font-size:1.3rem; }
+  .err { color:var(--warn); }
+  .hidden { display:none; }
+  code { font-size:.8rem; word-break:break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Демо каса · „Демо кухня (тест)“</h1>
+  <p class="sub">Така касата на доставчика създава подписана заявка (канал A). Тестов възел, без парична стойност.</p>
+
+  <section class="card" id="menu"></section>
+
+  <section class="card hidden" id="pay" style="text-align:center">
+    <p><strong id="pText"></strong></p>
+    <p style="font-size:1.6rem;font-weight:650;margin:4px 0 12px" id="pAmount"></p>
+    <div class="qr" id="pQr"></div>
+    <p class="muted">Сканирай с телефона. Валидна още <span id="pLeft"></span> с.</p>
+    <p id="pState" class="muted">Чакам потвърждение…</p>
+    <p class="muted"><a id="pLink" href="#" target="_blank" rel="noopener">Отвори на това устройство</a></p>
+  </section>
+
+  <p class="muted">Касата научава само, че плащането е потвърдено, не и наличността или самоличността на притежателя.</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let timer = null;
+const fmt = a => Number(a).toFixed(2) + " €";
+
+async function loadMenu() {
+  const m = await (await fetch("/v0/demo/menu")).json();
+  $("menu").innerHTML = m.items.map(i =>
+    `<div class="item"><span>${i.text}<br><span class="muted">${fmt(i.amount)}</span></span><button data-ref="${i.ref}">Заявка</button></div>`).join("");
+  $("menu").querySelectorAll("button").forEach(b => b.onclick = () => createRequest(b.dataset.ref));
+}
+
+async function createRequest(ref) {
+  clearInterval(timer);
+  const r = await (await fetch("/v0/demo/request", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ref})})).json();
+  $("pText").textContent = r.request.offer.text;
+  $("pAmount").textContent = fmt(r.request.amount);
+  $("pQr").innerHTML = r.qrSvg;
+  $("pLink").href = r.url;
+  $("pState").className = "muted"; $("pState").textContent = "Чакам потвърждение…";
+  $("pQr").style.opacity = 1;
+  $("pay").classList.remove("hidden");
+  const until = new Date(r.request.expiresAt).getTime();
+  $("pLeft").textContent = Math.round((until - Date.now()) / 1000);
+  timer = setInterval(async () => {
+    const left = Math.max(0, Math.round((until - Date.now()) / 1000));
+    $("pLeft").textContent = left;
+    const s = await (await fetch("/v0/redeem/status/" + encodeURIComponent(r.request.nonce))).json().catch(() => ({}));
+    if (s.redeemed) {
+      clearInterval(timer);
+      $("pState").className = "ok"; $("pState").textContent = "Платено ✓ " + fmt(s.result.amount);
+      $("pQr").style.opacity = .25;
+    } else if (left === 0) {
+      clearInterval(timer);
+      $("pState").className = "err"; $("pState").textContent = "Заявката изтече. Създай нова.";
+      $("pQr").style.opacity = .25;
+    }
+  }, 2000);
+}
+loadMenu();
+</script>
+</body>
+</html>

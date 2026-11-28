@@ -1,0 +1,168 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: EUPL-1.2 -->
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L-euro – моята партида</title>
+<style>
+  :root { --bg:#f6f7f5; --fg:#1d2420; --muted:#5d6862; --card:#fff; --line:#dfe3df; --accent:#1f7a4d; --warn:#a14a1a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121614; --fg:#e7ece9; --muted:#9aa69f; --card:#1b201d; --line:#2c332f; --accent:#46b981; --warn:#e39566; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--fg); }
+  main { max-width:520px; margin:0 auto; padding:20px 16px 48px; }
+  h1 { font-size:1.3rem; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; font-size:.9rem; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:0 0 16px; }
+  .big { font-size:2rem; font-weight:650; }
+  button { font:inherit; font-weight:600; border:0; border-radius:10px; padding:12px 18px; background:var(--accent); color:#fff; width:100%; cursor:pointer; }
+  button.secondary { background:transparent; color:var(--accent); border:1px solid var(--line); }
+  button:disabled { opacity:.5; }
+  .muted { color:var(--muted); font-size:.9rem; }
+  .err { color:var(--warn); }
+  .ok { color:var(--accent); font-weight:650; }
+  ul.ev { list-style:none; padding:0; margin:0; font-size:.88rem; }
+  ul.ev li { padding:6px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:8px; }
+  code { font-size:.8rem; word-break:break-all; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>L-euro · моята партида</h1>
+  <p class="sub">Тестов възел. Демо ваучерите нямат парична стойност.</p>
+
+  <div id="msg" class="card hidden"></div>
+
+  <section id="enrol" class="card hidden">
+    <p>Нямаш партида на това устройство. Създай тестова партида с пасключ. Ключът остава в телефона, а регистърът пази само публичния ключ.</p>
+    <button id="enrolBtn">Създай партида с пасключ</button>
+  </section>
+
+  <section id="confirm" class="card hidden">
+    <p class="muted">Заявка за осребряване</p>
+    <p><strong id="cAcceptor"></strong></p>
+    <p id="cOffer"></p>
+    <p class="big" id="cAmount"></p>
+    <p class="muted" id="cBalance"></p>
+    <button id="confirmBtn">Потвърди с пасключ</button>
+    <p class="muted">Подписваш точно тази версия на офертата (<code id="cHash"></code>).</p>
+  </section>
+
+  <section id="account" class="card hidden">
+    <p class="muted">Наличност</p>
+    <div id="ents"></div>
+    <p class="muted" style="margin-top:12px">За плащане сканирай QR кода на касата с камерата на телефона.</p>
+  </section>
+
+  <section id="log" class="card hidden">
+    <p class="muted">Събития в партидата <span id="chain"></span></p>
+    <ul class="ev" id="events"></ul>
+  </section>
+
+  <p class="muted">Протокол: <a href="https://github.com/SolidarityLab/L-euro">L-euro spec v0.1</a> · <a href="/v0/docs">API</a></p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "leuro.account";
+const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const unb64u = s => Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length+3)%4)), c => c.charCodeAt(0));
+const fmt = (a,u) => u === "EUR" ? Number(a).toFixed(2) + " €" : a + " " + u;
+const getAcct = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+const setAcct = v => { try { localStorage.setItem(KEY, v); } catch {} };
+
+function show(id, on=true) { $(id).classList.toggle("hidden", !on); }
+function say(html, cls="") { $("msg").className = "card " + cls; $("msg").innerHTML = html; }
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error((j.detail && (j.detail.message || JSON.stringify(j.detail))) || r.statusText);
+  return j;
+}
+
+function creationOptions(o) {
+  return {...o, challenge: unb64u(o.challenge), user: {...o.user, id: unb64u(o.user.id)},
+    excludeCredentials: (o.excludeCredentials||[]).map(c => ({...c, id: unb64u(c.id)}))};
+}
+function requestOptions(o) {
+  return {...o, challenge: unb64u(o.challenge), allowCredentials: (o.allowCredentials||[]).map(c => ({...c, id: unb64u(c.id)}))};
+}
+
+async function enrol() {
+  $("enrolBtn").disabled = true;
+  try {
+    const s = await api("/v0/enrol/start", {});
+    const c = await navigator.credentials.create({publicKey: creationOptions(s.options)});
+    const cred = {id: c.id, rawId: b64u(c.rawId), type: c.type, clientExtensionResults: {},
+      response: {clientDataJSON: b64u(c.response.clientDataJSON), attestationObject: b64u(c.response.attestationObject),
+                 transports: c.response.getTransports ? c.response.getTransports() : []}};
+    const r = await api("/v0/enrol/finish", {session: s.session, credential: cred});
+    setAcct(r.account);
+    say("Партидата е създадена и в нея има тестов ваучер за 50,00 €.", "ok");
+    await route();
+  } catch (e) { say("Неуспешно създаване: " + e.message, "err"); }
+  $("enrolBtn").disabled = false;
+}
+
+async function loadAccount(acct) {
+  const a = await api("/v0/accounts/" + encodeURIComponent(acct));
+  $("ents").innerHTML = a.entitlements.map(e =>
+    `<div class="big">${fmt(e.balance, e.unit)}</div><div class="muted">${e.form} · ${e.goodsClass.scheme} ${e.goodsClass.code} · валиден до ${e.validUntil.slice(0,10)}${e.status !== "loaded" ? " · " + e.status : ""}</div>`).join("") || "<p>Няма права.</p>";
+  $("events").innerHTML = a.events.slice().reverse().map(e =>
+    `<li><span>${e.seq}. ${e.type}${e.evidence ? " · " + (e.actor.split(":").pop()) : ""}</span><span>${e.amount !== undefined ? fmt(e.amount, e.unit) : ""}</span></li>`).join("");
+  const v = await api("/v0/accounts/" + encodeURIComponent(acct) + "/verify");
+  $("chain").textContent = v.valid ? "· веригата от хешове е цяла ✓" : "· ВЕРИГАТА Е НАРУШЕНА";
+  show("account"); show("log");
+}
+
+let pending = null;
+async function startRedeem(acct, req) {
+  try {
+    const s = await api("/v0/redeem/start", {account: acct, request: req});
+    if (s.status === "redeemed") { say("Тази заявка вече е платена.", "ok"); history.replaceState(null, "", "/app/"); return; }
+    pending = s;
+    $("cAcceptor").textContent = s.display.acceptor;
+    $("cOffer").textContent = s.display.offer.text || s.display.offer.ref;
+    $("cAmount").textContent = fmt(s.display.amount, s.display.unit);
+    $("cBalance").textContent = "Наличност преди плащане: " + fmt(s.display.balance, s.display.unit);
+    $("cHash").textContent = s.display.offer.offerHash.slice(0, 12) + "…";
+    show("confirm");
+  } catch (e) { say("Заявката не може да се приеме: " + e.message, "err"); }
+}
+
+async function confirmRedeem() {
+  $("confirmBtn").disabled = true;
+  try {
+    const a = await navigator.credentials.get({publicKey: requestOptions(pending.options)});
+    const cred = {id: a.id, rawId: b64u(a.rawId), type: a.type, clientExtensionResults: {},
+      response: {clientDataJSON: b64u(a.response.clientDataJSON), authenticatorData: b64u(a.response.authenticatorData),
+                 signature: b64u(a.response.signature), userHandle: a.response.userHandle ? b64u(a.response.userHandle) : null}};
+    const r = await api("/v0/redeem/finish", {session: pending.session, credential: cred});
+    show("confirm", false);
+    say(`Платено: ${fmt(r.result.amount, r.result.unit)}` + (r.result.balanceAfter !== undefined ? `. Остават ${fmt(r.result.balanceAfter, r.result.unit)}.` : "."), "ok");
+    history.replaceState(null, "", "/app/");
+    await loadAccount(getAcct());
+  } catch (e) { say("Плащането не е потвърдено: " + e.message, "err"); }
+  $("confirmBtn").disabled = false;
+}
+
+async function route() {
+  if (!window.PublicKeyCredential) { say("Този браузър не поддържа пасключове.", "err"); return; }
+  const acct = getAcct();
+  const m = location.hash.match(/r=([A-Za-z0-9_-]+)/);
+  let req = null;
+  if (m) { try { req = JSON.parse(new TextDecoder().decode(unb64u(m[1]))); } catch { say("Невалиден QR код.", "err"); } }
+  show("enrol", !acct);
+  if (!acct) { if (req) say("Първо създай партида. След това заявката ще се покаже за потвърждение.", ""); return; }
+  try { await loadAccount(acct); } catch (e) { say("Партидата не е намерена на този възел.", "err"); show("enrol"); return; }
+  if (req) await startRedeem(acct, req);
+}
+
+$("enrolBtn").onclick = enrol;
+$("confirmBtn").onclick = confirmRedeem;
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>

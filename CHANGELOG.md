@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `reference/depositary/`: first reference implementation (prototype) of the
+  depositary for the test pilot. It covers holder accounts with passkeys, the
+  hash-chained event log and channel A redemption with the evidence of §7.6,
+  plus a demo till and holder web app. The specification and schemas are
+  unchanged.
+
 ## v0.1.1-draft — 2026-11-27
 
 Position paper v0.2 (Bulgarian). The specification and schemas are unchanged.
